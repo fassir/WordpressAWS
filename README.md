@@ -181,7 +181,7 @@ Ele será usado para montar a instância.
 
 ## Criação da Instância EC2 
 
-Para criar as instâncias EC2, pesquise por EC2 e selecione a opção Iniciar instância. Escolha a imagem do Amazon Linux. Selecione o tipo de instância t2.micro, selecione o grupo de segurança da EC2, habilite solicitações de DNS IPv4 (registro A) com base em recursos, desabilite Recuperação automática de instância, selecione interromper caso comportamento de desligamento, desabilite interromper - comportamento de hibernação, desabilite proteção contra encerramento, desabilite interromper proteção, desabilite monitoramento do CloudWatch detalhado, deixe como padrão a especificação de crédito, como opção de compra selecione nenhum e como Dados de usuário utilize o seguinte código: 
+Para criar as instâncias EC2, pesquise por EC2 e selecione a opção Iniciar instância. Escolha a imagem do Amazon Linux. Selecione o tipo de instância t2.micro, selecione o grupo de segurança da EC2, habilite solicitações de DNS IPv4 (registro A) com base em recursos, desabilite Recuperação automática de instância, selecione interromper caso comportamento de desligamento, desabilite interromper - comportamento de hibernação, desabilite proteção contra encerramento, desabilite interromper proteção, desabilite monitoramento do CloudWatch detalhado, deixe como padrão a especificação de crédito, como opção de compra selecione nenhum e como Dados de usuário utilize o seguinte [código](user_data.sh) : 
 
 ```bash 
 #!/bin/bash 
@@ -196,12 +196,17 @@ EFS_MOUNT_POINT=/mnt/efs/wordpress
 case "$USER" in
   ec2-user)
   sudo yum update 
-  sudo yum install docker nfs-utils amazon-efs-utils -y;;
+  sudo yum install docker nfs-utils amazon-efs-utils -y
+  curl -SL "https://github.com/docker/compose/releases/download/v2.23.0/docker-compose-linux-x86_64" -o /usr/libexec/docker/cli-plugins/docker-compose
+  sudo chmod +x /usr/libexec/docker/cli-plugins/docker-compose;;
   ubuntu)
   sudo apt-get update 
-  sudo apt-get install docker nfs-utils amazon-efs-utils -y;;
+  sudo apt-get install docker nfs-utils amazon-efs-utils -y
+  sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose 
+  sudo chmod +x /usr/local/bin/docker-compose;;
   *) shutdown now;;
 esac
+
 sudo systemctl start docker 
 sudo systemctl enable docker 
 
@@ -224,29 +229,30 @@ while ! mountpoint -q /mnt/efs; do
   sleep 2
 done
 
-sudo tee /home/$USER/docker-compose.yml <<EOL 
-services: 
-  wordpress: 
-    image: wordpress:6-php8.2 
-    container_name: web 
-    ports: 
-      - 80:80 
-    restart: always 
-    environment: 
-      WORDPRESS_DB_HOST: <rds> 
-      WORDPRESS_DB_USER: <usuario_db>  
-      WORDPRESS_DB_PASSWORD: <senha> 
-      WORDPRESS_DB_NAME: wordpress 
-    volumes: 
-      - $EFS_MOUNT_POINT:/var/www/html  
-EOL 
+sudo tee /home/"$USER"/docker-compose.yml <<EOL
+services:
+  wordpress:
+    image: wordpress:6-php8.2
+    container_name: web
+    ports:
+      - "80:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: <rds> # Substitua pelo endpoint do seu RDS
+      WORDPRESS_DB_USER: <usuario_db> # Substitua pelo usuário do DB
+      WORDPRESS_DB_PASSWORD: <senha> # Substitua pela senha do DB
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - "$EFS_MOUNT_POINT:/var/www/html"
+EOL
 
 sudo chown $USER:$USER /home/$USER/docker-compose.yml 
 cd /home/$USER 
 
 while ! sudo -u $USER docker info &>/dev/null; do sleep 5; done 
 
-sudo -u $USER docker-compose up -d 
+sudo -u $USER docker-compose up -d
+ 
 sudo -u "$USER" docker exec -i web bash -c 'cat <<EOF > /var/www/html/healthcheck.php
 <?php
 http_response_code(200);
@@ -257,7 +263,7 @@ exit;
 EOF' 
 if  sudo -u $USER docker exec -i web ls /var/www/html/healthcheck.php > /dev/null 2>&1; then 
   echo "Arquivo healthcheck.php criado com sucesso!" 
-fi 
+fi
 ``` 
 
 Para que não haja falha na criação, editaremos a regra do healthcheck na AWS pois existe um falso negativo que indica que o servidor está pronto, ou seja, erro 302. 
