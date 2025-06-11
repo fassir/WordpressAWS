@@ -59,7 +59,7 @@ São utilizadas as seguintes tecnologias neste projeto:
 
 O primeiro passo do projeto é montar os pontos de serviço conforme o diagrama abaixo: 
 
-![alt text](imagensMarkdown\image.png) 
+![alt text](imagensMarkdown/image.png) 
 
 ## Criando a aplicação 
 
@@ -69,35 +69,35 @@ O primeiro passo é iniciar uma aplicação na AWS para que possamos criar os se
 
 Para criar a VPC, pesquise por VPC e selecione a opção criar. Abrirá uma janela igual a mostrada abaixo.  
 
-![alt text](imagensMarkdown\image-1.png) 
+![alt text](imagensMarkdown/image-1.png) 
 
 Utilize a opção VPC e muito mais para montar automaticamente toda rede incluindo a NAT, tabelas de rotas e conexões de rede. Utilize numero de AZs 2, número de redes públicas e privadas igual a 2 
 
-![alt text](imagensMarkdown\image-2.png) 
+![alt text](imagensMarkdown/image-2.png) 
 
 adicione um gateway por AZ e aperte criar VPC.   
 
-![alt text](imagensMarkdown\image-3.png) 
+![alt text](imagensMarkdown/image-3.png) 
 
 Precisamos agora criar os grupos de segurança. Na aba da VPC localize o item grupo de segurança 
 
-![alt text](imagensMarkdown\image-4.png) 
+![alt text](imagensMarkdown/image-4.png) 
 
 Após isso selecione a opção criar grupo de segurança. 
 
 Para o load balancer, adicione um nome referente à regra publica e configure com a seguinte regra: 
 
-![alt text](imagensMarkdown\image-5.png) 
+![alt text](imagensMarkdown/image-5.png) 
 
 Para a EC2,nomeie o grupo de segurança reconhecível para entender que é voltado para conexao web (wordpress), selecione o grupo de segurança correto e configure o grupo de segurança de acordo com a imagem: 
 
-![alt text](imagensMarkdown\image-7.png) 
+![alt text](imagensMarkdown/image-7.png) 
 
 onde a entrada e saída são o grupo de segurança do load balancer. 
 
 Para o grupo de segurança do RDS adicionamos um nome associado ao RDS ou banco de dados, a VPC criada e usamos as seguintes regras 
 
-![alt text](imagensMarkdown\image-8.png) 
+![alt text](imagensMarkdown/image-8.png) 
 
 onde a origem/destino é o grupo de segurança EC2 ou web. 
 
@@ -109,17 +109,17 @@ Para o EFS criamos o grupo de segurança com o nome associado a ele mesmo, selec
 
 Para criar o LoadBalancer, pesquise por Load Balancer e selecione a opção Criar Load Balancer.  
 
-![alt text](imagensMarkdown\image-14.png) 
+![alt text](imagensMarkdown/image-14.png) 
 
 Escolha a opção Classic Load Balancer e clique em Criar. 
 
 Escolha a opção Load Balance Classic e clique em Criar. 
 
-![alt text](imagensMarkdown\image-15.png) 
+![alt text](imagensMarkdown/image-15.png) 
 
 Adicione o nome identificável para o wordpress, selecione a opção voltado para internet, selecione o VPC criado anteriormente, as sub-redes publicas das zonas de disponibilidade distintas. 
 
-![alt text](imagensMarkdown\image-6.png) 
+![alt text](imagensMarkdown/image-6.png) 
 
 Adicione o grupo de segurança associada à conexão pública. Será necessário retornar à configuração, uma vez que não há instâncias criadas ainda.  
 
@@ -129,53 +129,53 @@ Adicione o grupo de segurança associada à conexão pública. Será necessário
 
 Para criar o RDS, pesquise por RDS e selecione a opção Criar banco de dados. Selecione a opção MySQL e selecione as seguintes configurações: 
 
-![alt text](imagensMarkdown\image-21.png) 
+![alt text](imagensMarkdown/image-21.png) 
 
-![alt text](imagensMarkdown\image-22.png) 
+![alt text](imagensMarkdown/image-22.png) 
 
-![alt text](imagensMarkdown\image-23.png) 
+![alt text](imagensMarkdown/image-23.png) 
 
-![alt text](imagensMarkdown\image-24.png) 
+![alt text](imagensMarkdown/image-24.png) 
 
-![alt text](imagensMarkdown\image-25.png) 
+![alt text](imagensMarkdown/image-25.png) 
 
-![alt text](imagensMarkdown\image-26.png) 
+![alt text](imagensMarkdown/image-26.png) 
 
 (selecione o grupo de segurança do banco de dados criado anteriormente) 
 
-![alt text](imagensMarkdown\image-27.png) 
+![alt text](imagensMarkdown/image-27.png) 
 
-![alt text](imagensMarkdown\image-28.png) 
+![alt text](imagensMarkdown/image-28.png) 
 
-![alt text](imagensMarkdown\image-29.png) 
+![alt text](imagensMarkdown/image-29.png) 
 
 Após preenchida as informações, clique em Criar banco de dados. 
 
 Uma vez criado, identifique o endpoint do banco de dados pois ele será necessário para montar a instância 
 
-![alt text](imagensMarkdown\image-9.png) 
+![alt text](imagensMarkdown/image-9.png) 
 
 ## Criando o EFS 
 
 Para criar o EFS, pesquise por EFS e selecione a opção Criar sistema de arquivos. Selecione a opção personalizar 
 
-![alt text](imagensMarkdown\image-31.png) 
+![alt text](imagensMarkdown/image-31.png) 
 
 Adicione um nome e selecione o tipo do sistema de arquivos regional, desabilite backups automáticos, desabilite criptografia, selecione a transição do infrequent access para 7 dias, transição para Archive para nenhum, transição para o padrão no primeiro acesso, configuração de performance intermitente, modo de desempenho para uso geral e vá para a próxima etapa.  
 
-![alt text](imagensMarkdown\image-32.png) 
+![alt text](imagensMarkdown/image-32.png) 
 
-![alt text](imagensMarkdown\image-33.png)  
+![alt text](imagensMarkdown/image-33.png)  
 
 Após isto, insira a VPC criada, o ID da subrede e os grupos de segurança das zonas de disponibilidade usadas para o EFS. 
 
-![alt text](imagensMarkdown\image-34.png)  
+![alt text](imagensMarkdown/image-34.png)  
 
 Selecione proximo e após isto criar. 
 
 Uma vez criado, selecione a opção anexar no canto superior à direita e copie o código para montar usando NFS: 
 
-![alt text](imagensMarkdown\image-10.png) 
+![alt text](imagensMarkdown/image-10.png) 
 
 Ele será usado para montar a instância. 
 
@@ -254,7 +254,7 @@ http_response_code(200);
 
 header('Content-Type: application/json'); 
 
-echo json_encode([ status=> OK, message => Health check passed\"]); 
+echo json_encode([ status=> OK, message => Health check passed"]); 
 
 exit; 
 
@@ -274,17 +274,17 @@ Para isto, acesse
 
 Retornando ao load balancer, selecione o já criado e vá até a aba Instancias de destino. 
 
-![alt text](imagensMarkdown\image-11.png) 
+![alt text](imagensMarkdown/image-11.png) 
 
 Ao selecionar a instancia original aparecerá em seguida na aba analisa instancias selecionadas 
 
-![alt text](imagensMarkdown\image-12.png) 
+![alt text](imagensMarkdown/image-12.png) 
 
 Marque a caixa e selecione a opção salvar alterações. 
 
 Para que não haja falha na criação, editaremos a regra do healthcheck na AWS pois existe um falso negativo que indica que o servidor está pronto, ou seja, erro 302. Para isto, acesse na aba do EC2 na sessão balanceamento de carga a opção grupos de destino 
 
-![alt text](imagensMarkdown\image-40.png)   
+![alt text](imagensMarkdown/image-40.png)   
 
 Edite o grupo e escolha uma das opções: 
 
@@ -300,7 +300,7 @@ A imagem do wordpress sempre responde com o status 200 e, portanto, é um bom al
 
 na aba caminho da verificação de integridade conforme a imagem abaixo 
 
-![alt text](imagensMarkdown\image-41.png) 
+![alt text](imagensMarkdown/image-41.png) 
 
 2. Alterar o código de acesso: 
 
@@ -314,33 +314,33 @@ Abaixo da opção anterior, em configurações avançadas de verificação de in
 
 conforme a imagem abaixo 
 
-![alt text](imagensMarkdown\image-42.png) 
+![alt text](imagensMarkdown/image-42.png) 
 
 ## Auto scalling 
 
 Após criar o template, crie o grupo de auto scalling. Adicione o grupo e selecione o template recém realizado e sua versão 
 
-![alt text](imagensMarkdown\image-13.png) 
+![alt text](imagensMarkdown/image-13.png) 
 
 Selecione a VPC e as zonas de disponibilidade e subredes privadas. 
 
-![alt text](imagensMarkdown\image-16.png) 
+![alt text](imagensMarkdown/image-16.png) 
 
 Selecione o balanceamento de carga para anexar um balanceamento de carga existente e selecione em anexar um balanceador de carga a opção escolher um classic load balancer e selecione o load balancer existente. Vá para a próxima etapa. 
 
-![alt text](imagensMarkdown\image-36.png) 
+![alt text](imagensMarkdown/image-36.png) 
 
 Habilite a opção ative as verificações de integridade do Elastic Load Balancing e vá para a próxima etapa. 
 
-![alt text](imagensMarkdown\image-37.png) 
+![alt text](imagensMarkdown/image-37.png) 
 
 Selecione a capacidade máxima de acordo com o solicitado pelo projeto 
 
-![alt text](imagensMarkdown\image-38.png) 
+![alt text](imagensMarkdown/image-38.png) 
 
 Habilite a métrica do Cloudwatch e pule para a revisão. 
 
-![alt text](imagensMarkdown\image-39.png) 
+![alt text](imagensMarkdown/image-39.png) 
 
 Uma vez criado verá que terá 2 instâncias e conforme a necessidade irá aumentar a contagem 
 
@@ -348,6 +348,6 @@ Uma vez criado verá que terá 2 instâncias e conforme a necessidade irá aumen
 
 Localize o dns do load balancer e cole em seu navegador. Você verá uma pagina como esta 
 
-![alt text](imagensMarkdown\image-43.png) 
+![alt text](imagensMarkdown/image-43.png) 
 
  
