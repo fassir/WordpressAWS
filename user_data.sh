@@ -62,20 +62,14 @@ cd /home/$USER
 while ! sudo -u $USER docker info &>/dev/null; do sleep 5; done 
 
 sudo -u $USER docker-compose up -d 
-sudo -u $USER docker exec -i web bash -c "cat <<EOF > /var/www/html/healthcheck.php 
-<?php 
-
-http_response_code(200); 
-
-header('Content-Type: application/json'); 
-
-echo json_encode([ status=> OK, message => Health check passed\"]); 
-
-exit; 
-
-?> 
-
-EOF" 
+sudo -u "$USER" docker exec -i web bash -c 'cat <<EOF > /var/www/html/healthcheck.php
+<?php
+http_response_code(200);
+header("Content-Type: application/json");
+echo json_encode(["status" => "OK", "message" => "Health check passed"]);
+exit;
+?>
+EOF' 
 if  sudo -u $USER docker exec -i web ls /var/www/html/healthcheck.php > /dev/null 2>&1; then 
   echo "Arquivo healthcheck.php criado com sucesso!" 
 fi
